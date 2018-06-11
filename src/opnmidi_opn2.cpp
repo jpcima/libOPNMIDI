@@ -48,6 +48,11 @@
 #include "chips/gx_opn2.h"
 #endif
 
+#if 1
+#define dbg_command(fmt, ...) fprintf(stderr, (fmt), ##__VA_ARGS__)
+#else
+#define dbg_command(fmt, ...) do {} while(0)
+#endif
 
 static const uint8_t NoteChannels[6] = { 0, 1, 2, 4, 5, 6 };
 
@@ -104,6 +109,7 @@ void OPN2::NoteOff(size_t c)
     uint8_t     ch4 = c % 6;
     getOpnChannel(uint16_t(c), card, port, cc);
     PokeO(card, 0, 0x28, NoteChannels[ch4]);
+    dbg_command("C%u CH%u NoteOff\n", card+1, ch4+1);
 }
 
 void OPN2::NoteOn(unsigned c, double hertz) // Hertz range: 0..131071
@@ -129,6 +135,7 @@ void OPN2::NoteOn(unsigned c, double hertz) // Hertz range: 0..131071
     PokeO(card, port, 0xA0 + cc,  x2 & 0xFF);
     PokeO(card, 0, 0x28, 0xF0 + NoteChannels[ch4]);
     pit[c] = static_cast<uint8_t>(x2 >> 8);
+    dbg_command("C%u CH%u NoteOn\n", card+1, ch4+1);
 }
 
 void OPN2::Touch_Real(unsigned c, unsigned volume, uint8_t brightness)
@@ -187,6 +194,7 @@ void OPN2::Touch_Real(unsigned c, unsigned volume, uint8_t brightness)
     //   63 - chanvol + chanvol*instrvol/63
     // Also (slower, floats):
     //   63 + chanvol * (instrvol / 63.0 - 1)
+    dbg_command("C%u TouchReal %u\n", card+1, volume);
 }
 
 void OPN2::Patch(uint16_t c, const opnInstData &adli)
@@ -217,6 +225,7 @@ void OPN2::Patch(uint16_t c, const opnInstData &adli)
     PokeO(card, port, 0xB0 + cc, adli.fbalg);//Feedback/Algorithm
     regBD[c] = (regBD[c] & 0xC0) | (adli.lfosens & 0x3F);
     PokeO(card, port, 0xB4 + cc, regBD[c]);//Panorame and LFO bits
+    dbg_command("C%u Patch\n", card+1);
 }
 
 void OPN2::Pan(unsigned c, unsigned value)
@@ -228,6 +237,7 @@ void OPN2::Pan(unsigned c, unsigned value)
     uint8_t val = (value & 0xC0) | (adli.lfosens & 0x3F);
     regBD[c] = val;
     PokeO(card, port, 0xB4 + cc, val);
+    dbg_command("C%u Pan\n", card+1);
 }
 
 void OPN2::Silence() // Silence all OPL channels.
@@ -329,6 +339,7 @@ void OPN2::Reset(int emulator, unsigned long PCM_RATE)
         PokeO(card, 0, 0x28, 0x04 ); //Note Off 3 channel
         PokeO(card, 0, 0x28, 0x05 ); //Note Off 4 channel
         PokeO(card, 0, 0x28, 0x06 ); //Note Off 5 channel
+        dbg_command("C%u Reset\n", card+1);
     }
 
     Silence();
