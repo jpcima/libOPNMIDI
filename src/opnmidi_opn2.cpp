@@ -48,7 +48,7 @@
 #include "chips/gx_opn2.h"
 #endif
 
-#if 1
+#if 0
 #define dbg_command(fmt, ...) fprintf(stderr, (fmt), ##__VA_ARGS__)
 #else
 #define dbg_command(fmt, ...) do {} while(0)

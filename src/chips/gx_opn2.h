@@ -23,7 +23,7 @@ public:
 private:
     enum { WriteCycle = 15 };
     unsigned m_cycle;
-    struct BufferedWrite { unsigned port, addr, data; };
+    struct BufferedWrite { unsigned port, addr, data; bool ready; };
     enum { BufferMax = 256 };
     unsigned m_bufindex;
     unsigned m_buflength;
