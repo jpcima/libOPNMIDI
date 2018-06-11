@@ -51,7 +51,7 @@
 #if 1
 #define dbg_command(fmt, ...) fprintf(stderr, (fmt), ##__VA_ARGS__)
 #else
-#define dbg_command(fmt, ...) do {} while(1)
+#define dbg_command(fmt, ...) do {} while(0)
 #endif
 
 static const uint8_t NoteChannels[6] = { 0, 1, 2, 4, 5, 6 };

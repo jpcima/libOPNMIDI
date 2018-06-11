@@ -6,6 +6,7 @@
 GXOPN2::GXOPN2()
     : m_chip(YM2612GXAlloc()),
       m_framecount(0),
+      m_cycle(0),
       m_bufindex(0),
       m_buflength(0)
 {
@@ -33,6 +34,7 @@ void GXOPN2::reset()
     YM2612GX *chip = m_chip;
     OPNChipBaseT::reset();
     YM2612GXResetChip(chip);
+    m_cycle = 0;
 }
 
 void GXOPN2::writeReg(uint32_t port, uint16_t addr, uint8_t data)
@@ -74,15 +76,21 @@ void GXOPN2::nativeGenerate(int16_t *frame)
     YM2612GXGenerateOneNative(chip, frame);
     ++m_framecount;
 
-    // run one command from buffer
-    if(m_buflength > 0) {
-        BufferedWrite ent;
-        ent = m_buf[m_bufindex];
-        m_bufindex = (m_bufindex + 1) % BufferMax;
-        --m_buflength;
-        YM2612GXWrite(chip, 0 + ent.port * 2, ent.addr);
-        YM2612GXWrite(chip, 1 + ent.port * 2, ent.data);
+    unsigned cycle = m_cycle;
+
+    if(cycle == WriteCycle) {
+        // run commands from buffer
+        while(m_buflength > 0) {
+            BufferedWrite ent;
+            ent = m_buf[m_bufindex];
+            m_bufindex = (m_bufindex + 1) % BufferMax;
+            --m_buflength;
+            YM2612GXWrite(chip, 0 + ent.port * 2, ent.addr);
+            YM2612GXWrite(chip, 1 + ent.port * 2, ent.data);
+        }
     }
+
+    m_cycle = (cycle == WriteCycle) ? 0 : (cycle + 1);
 }
 
 const char *GXOPN2::emulatorName()

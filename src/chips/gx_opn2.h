@@ -21,6 +21,8 @@ public:
     const char *emulatorName() override;
 
 private:
+    enum { WriteCycle = 15 };
+    unsigned m_cycle;
     struct BufferedWrite { unsigned port, addr, data; };
     enum { BufferMax = 256 };
     unsigned m_bufindex;
