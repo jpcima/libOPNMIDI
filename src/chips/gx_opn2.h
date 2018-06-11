@@ -19,6 +19,13 @@ public:
     void nativePostGenerate() override;
     void nativeGenerate(int16_t *frame) override;
     const char *emulatorName() override;
+
+private:
+    struct BufferedWrite { unsigned port, addr, data; };
+    enum { BufferMax = 256 };
+    unsigned m_bufindex;
+    unsigned m_buflength;
+    BufferedWrite m_buf[BufferMax];
 };
 
 #endif // GX_OPN2_H
