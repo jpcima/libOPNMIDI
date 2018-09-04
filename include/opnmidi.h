@@ -490,7 +490,10 @@ enum
  */
 typedef enum OPN2_InstrumentFlags
 {
-    OPNMIDI_Ins_IsBlank    = 0x01
+    /*! Is pseudo eight-operator (two 4-operator voices) instrument */
+    OPNMIDI_Ins_Pseudo8op  = 0x01,
+    /* Is a blank instrument entry */
+    OPNMIDI_Ins_IsBlank    = 0x02
 } OPN2_InstrumentFlags;
 
 /**
