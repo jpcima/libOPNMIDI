@@ -22,7 +22,8 @@ INCLUDEPATH += $$PWD/include $$PWD/src
 HEADERS += \
     include/opnmidi.h \
     src/chips/gens_opn2.h \
-    src/chips/gens/Ym2612_Emu.h \
+    src/chips/gens/Ym2612.hpp \
+    src/chips/gens/Ym2612_p.hpp \
     src/chips/mame/mamedef.h \
     src/chips/mame/mame_ym2612fm.h \
     src/chips/mame_opn2.h \
@@ -44,7 +45,7 @@ HEADERS += \
 
 SOURCES += \
     src/chips/gens_opn2.cpp \
-    src/chips/gens/Ym2612_Emu.cpp \
+    src/chips/gens/Ym2612.cpp \
     src/chips/gx/gx_ym2612.c \
     src/chips/gx_opn2.cpp \
     src/chips/mame/mame_ym2612fm.c \
