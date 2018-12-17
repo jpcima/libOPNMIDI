@@ -201,6 +201,8 @@ if(USE_MAME_2608_EMULATOR)
     list(APPEND libOPNMIDI_SOURCES
         ${libOPNMIDI_SOURCE_DIR}/src/chips/mame_opna.cpp
         ${libOPNMIDI_SOURCE_DIR}/src/chips/mamefm/fm.cpp
+        ${libOPNMIDI_SOURCE_DIR}/src/chips/mamefm/2608intf.cpp
+        ${libOPNMIDI_SOURCE_DIR}/src/chips/mamefm/ay8910.cpp
         ${libOPNMIDI_SOURCE_DIR}/src/chips/mamefm/ymdeltat.cpp)
     set(HAS_EMULATOR TRUE)
 else()

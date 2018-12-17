@@ -11,9 +11,6 @@
 #pragma once
 #include "emu.h"
 
-struct device_t;
-typedef int32_t stream_sample_t;
-
 /* --- select emulation chips --- */
 #define BUILD_YM2203  (0)       /* build YM2203(OPN)   emulator */
 #define BUILD_YM2608  (1)       /* build YM2608(OPNA)  emulator */

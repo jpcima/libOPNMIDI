@@ -23,35 +23,30 @@
 #include "mamefm/2608intf.h"
 
 struct MameOPNA::Impl {
-    ym2608_device dev;
+    machine_config mconf;
+    running_machine machine;
+    ym2608_device *dev;
     void *chip;
-    ssg_callbacks cbssg;
     // callbacks
     static uint8_t cbInternalReadByte(device_t *, offs_t) { return 0; }
     static uint8_t cbExternalReadByte(device_t *, offs_t) { return 0; }
     static void cbExternalWriteByte(device_t *, offs_t, uint8_t) {}
     static void cbHandleTimer(device_t *, int, int, int) {}
     static void cbHandleIRQ(device_t *, int) {}
-    static void cbSsgSetClock(device_t *, int) {}
-    static void cbSsgWrite(device_t *, int, int) {}
-    static int cbSsgRead(device_t *) { return 0; }
-    static void cbSsgReset(device_t *) {}
 };
 
 MameOPNA::MameOPNA(OPNFamily f)
     : OPNChipBaseBufferedT(f), impl(new Impl)
 {
     impl->chip = NULL;
-    impl->cbssg.set_clock = &Impl::cbSsgSetClock;
-    impl->cbssg.write = &Impl::cbSsgWrite;
-    impl->cbssg.read = &Impl::cbSsgRead;
-    impl->cbssg.reset = &Impl::cbSsgReset;
+    impl->dev = NULL;
     setRate(m_rate, m_clock);
 }
 
 MameOPNA::~MameOPNA()
 {
     ym2608_shutdown(impl->chip);
+    delete impl->dev;
     delete impl;
 }
 
@@ -59,15 +54,24 @@ void MameOPNA::setRate(uint32_t rate, uint32_t clock)
 {
     OPNChipBaseBufferedT::setRate(rate, clock);
     if(impl->chip)
+    {
         ym2608_shutdown(impl->chip);
+        impl->chip = NULL;
+    }
+    if(impl->dev)
+    {
+        delete impl->dev;
+        impl->dev = NULL;
+    }
 
     uint32_t chipRate = isRunningAtPcmRate() ? rate : nativeRate();
-    ym2608_device *device = &impl->dev;
+    ym2608_device *device = impl->dev = new ym2608_device(impl->mconf, "ymsnd", NULL, clock);
+    device->set_machine(impl->machine);
     void *chip = impl->chip = ym2608_init(
         device, (int)clock, (int)chipRate,
         &Impl::cbInternalReadByte, &Impl::cbExternalReadByte,
         &Impl::cbExternalWriteByte,
-        &Impl::cbHandleTimer, &Impl::cbHandleIRQ, &impl->cbssg);
+        &Impl::cbHandleTimer, &Impl::cbHandleIRQ, &ym2608_device::psgintf);
     ym2608_reset_chip(chip);
     ym2608_write(chip, 0, 0x29);
     ym2608_write(chip, 1, 0x9f);

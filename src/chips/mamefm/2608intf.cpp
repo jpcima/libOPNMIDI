@@ -21,34 +21,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OPNMIDI_MAMEFM_2608INTF_H
-#define OPNMIDI_MAMEFM_2608INTF_H
+#include "2608intf.h"
 
-#include "emu.h"
-#include "ay8910.h"
-#include "fm.h"
+DEFINE_DEVICE_TYPE(YM2608, ym2608_device, "ym2608", "YM2608 OPNA")
 
-class ym2608_device : public ay8910_device
+ym2608_device::ym2608_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
+    : ay8910_device(mconfig, YM2608, tag, owner, clock, PSG_TYPE_YM, 1, 2)
 {
-public:
-    ym2608_device(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
+}
 
-    static const ssg_callbacks psgintf;
-
-    void update_request();
-    static void update_request(device_t *dev);
+const ssg_callbacks ym2608_device::psgintf =
+{
+	&ym2608_device::psg_set_clock,
+	&ym2608_device::psg_write,
+	&ym2608_device::psg_read,
+	&ym2608_device::psg_reset
 };
-
-inline void ym2608_device::update_request()
-{
-    // libOPNMIDI: use this callback maybe
-}
-
-inline void ym2608_device::update_request(device_t *dev)
-{
-    static_cast<ym2608_device *>(dev)->update_request();
-}
-
-DECLARE_DEVICE_TYPE(YM2608, ym2608_device)
-
-#endif
